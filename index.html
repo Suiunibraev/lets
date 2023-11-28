@@ -24,43 +24,27 @@
       var fullName = document.getElementById('fullName').value;
       var email = document.getElementById('email').value;
 
-      // Google Apps Script code embedded directly in the HTML
-      var scriptCode = `
-        var SPREADSHEET_ID = '1aRY0_my5Wgfpj68Qg0L-7FQiZmayhlimJGp0kGZaDtc';
-        var SHEET_NAME = 'Untitled spreadsheet';
+      // Replace with the actual web app URL obtained from Google Apps Script deployment
+      var scriptURL = 'https://script.google.com/macros/s/AKfycbyRDbtcq3UbaAxSVjn5IJQymIHLKqHjjDvKpeS5xh1v3OHyUPhiZlo02gVYo4bOsCxY/exec';
 
-        function doPost(e) {
-          var fullName = e.parameter.fullName;
-          var email = e.parameter.email;
+      // Send a GET request to the Google Apps Script with the form data as parameters
+      var url = `${scriptURL}?fullName=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}`;
 
-          // Open the spreadsheet
-          var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-
-          // Append data to the sheet
-          sheet.appendRow([fullName, email]);
-
-          // Return success response
-          return ContentService.createTextOutput(JSON.stringify({ result: 'success' }))
-              .setMimeType(ContentService.MimeType.JSON);
-        }
-      `;
-
-      // Create a script element and add the script code to it
-      var scriptElement = document.createElement('script');
-      scriptElement.innerHTML = scriptCode;
-
-      // Append the script element to the body
-      document.body.appendChild(scriptElement);
-
-      // Trigger the Google Apps Script function
-      google.script.run.doPost({
-        fullName: fullName,
-        email: email
-      });
-
-      alert('Data submitted successfully!');
-      // You can reset the form if needed
-      document.getElementById('dataForm').reset();
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.result === 'success') {
+            alert('Data submitted successfully!');
+            // You can reset the form if needed
+            document.getElementById('dataForm').reset();
+          } else {
+            alert('Error submitting data. Please try again.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An unexpected error occurred. Please try again.');
+        });
     }
   </script>
 
